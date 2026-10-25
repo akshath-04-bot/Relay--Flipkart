@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Relay: a coordination layer for broken supply chains on the day after the Snap. Interactive prototype.">
+<meta name="theme-color" content="#07090E">
+<title>Relay prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#stage">Skip to the prototype</a>
+<header class="topbar">
+  <div class="tb-brand">
+    <span class="tb-logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/></svg></span>
+    <span class="tb-text"><span class="tb-name">RELAY <span class="chip chip-emerald chip-sm">Living pulse</span></span><span class="tb-sub">Day 1 post-Snap · Pune cluster (Hadapsar/Chakan)</span></span>
+  </div>
+  <nav class="tb-steps" aria-label="Jump to"></nav>
+  <div class="tb-right">
+    <button type="button" class="tb-btn" data-a="view" data-view="console">Console</button>
+    <button type="button" class="tb-btn sim-toggle" data-a="simOpen">Simulation</button>
+    <button type="button" class="tb-btn" data-a="reset">Reset demo</button>
+  </div>
+</header>
+<p class="disclaimer">Interactive simulation for the day after the Snap, 2018. SMS, OTP, GPS, payments and authority approvals are simulated. Custody creates no ownership.</p>
+<div id="stage" class="stage">
+  <div class="op-col"><div id="phone" class="phone"></div></div>
+  <aside id="sim" class="sim" aria-label="Simulation controls"></aside>
+  <div id="console"></div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<noscript><p class="disclaimer">Relay needs JavaScript turned on.</p></noscript>
+<script src="data.js"></script>
+<script src="logic.js"></script>
+<script src="ui.js"></script>
+<script src="operator.js"></script>
+<script src="console.js"></script>
+<script src="sms.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

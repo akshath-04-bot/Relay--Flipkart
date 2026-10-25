@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RELAY // Autonomous Emergency Logistics Rail</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            obsidian: "#07090E",
+            canvas: "#0B0E14",
+            surface: "#121721",
+            surfaceElevated: "#18202F",
+            surfaceBorder: "rgba(255, 255, 255, 0.08)",
+            emeraldGlow: "#10B981",
+            amberWarn: "#F59E0B",
+            crimsonGlow: "#EF4444",
+            electricSky: "#38BDF8",
+            violetPulse: "#818CF8",
+            textPrimary: "#F1F5F9",
+            textMuted: "#94A3B8",
+            textSubtle: "#64748B",
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          borderRadius: {
+            '2xl': '1.25rem',
+            '3xl': '1.75rem',
+            '4xl': '2.25rem',
+          },
+          boxShadow: {
+            'glow-emerald': '0 0 24px -4px rgba(16, 185, 129, 0.4)',
+            'glow-crimson': '0 0 24px -4px rgba(239, 68, 68, 0.45)',
+            'glow-sky': '0 0 24px -4px rgba(56, 189, 248, 0.4)',
+            'phone-frame': '0 25px 70px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'dash-flow': 'dash 20s linear infinite',
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)); }
+      50% { opacity: 0.35; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.2)); }
+    }
+    @keyframes pulseSevered {
+      0%, 100% { opacity: 1; filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.8)); transform: scale(1); }
+      50% { opacity: 0.6; filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.4)); transform: scale(0.97); }
+    }
+    @keyframes flowLine {
+      to { stroke-dashoffset: -40; }
+    }
+    .flow-active {
+      stroke-dasharray: 6 6;
+      animation: flowLine 1.6s linear infinite;
+    }
+    .glass-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-hover:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-none {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-obsidian text-textPrimary font-sans antialiased selection:bg-emeraldGlow selection:text-obsidian min-h-screen flex flex-col items-center overflow-x-hidden">
+<!-- TOP APP CHROME: DESIGN DIRECTION CRITIQUE & SYSTEM BAR -->
+<header class="w-full bg-surface/80 backdrop-blur-xl border-b border-surfaceBorder sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+<!-- Brand & Post-Snap Telemetry -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2.5">
+<div class="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-emeraldGlow to-electricSky flex items-center justify-center p-[1px]">
+<div class="w-full h-full bg-obsidian rounded-[11px] flex items-center justify-center">
+<span class="material-symbols-outlined text-emeraldGlow text-[18px]">hub</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-extrabold tracking-tight text-base font-sans text-white">RELAY</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-mono tracking-wider font-semibold bg-emeraldGlow/10 text-emeraldGlow border border-emeraldGlow/30">LIVING PULSE</span>
+</div>
+<p class="text-[11px] font-mono text-textMuted leading-none mt-0.5">DAY 1 POST-SNAP · PUNE CLUSTER (HADAPSAR/CHAKAN)</p>
+</div>
+</div>
+</div>
+<!-- Live Direction Architecture Selector Modal Trigger -->
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 text-textMuted hover:text-white border border-white/10 flex items-center gap-1.5 transition-all" onclick="toggleDirectionModal()">
+<span class="material-symbols-outlined text-[16px] text-electricSky">insights</span>
+<span>Design Architecture Critique (3 Directions)</span>
+<span class="px-1 py-0.2 rounded bg-electricSky/20 text-electricSky text-[10px] font-mono">REC: #1</span>
+</button>
+<div class="h-4 w-px bg-white/10 mx-1"></div>
+<!-- Phone Screen Quick Jumpers -->
+<div class="flex items-center bg-obsidian/70 p-1 rounded-full border border-white/10 text-xs">
+<button class="nav-chip px-3 py-1 rounded-full font-medium transition-all bg-emeraldGlow text-obsidian font-bold" id="tab-today-nav" onclick="switchScreen('today')">1. Today</button>
+<button class="nav-chip px-3 py-1 rounded-full font-medium text-textMuted hover:text-white transition-all" id="tab-chain-nav" onclick="switchScreen('chain')">2. Constellation</button>
+<button class="nav-chip px-3 py-1 rounded-full font-medium text-textMuted hover:text-white transition-all" id="tab-task-nav" onclick="switchScreen('task')">3. Task T214</button>
+<button class="nav-chip px-3 py-1 rounded-full font-medium text-textMuted hover:text-white transition-all" id="tab-handoff-nav" onclick="switchScreen('handoff')">4. Handoff</button>
+<button class="nav-chip px-3 py-1 rounded-full font-medium text-textMuted hover:text-white transition-all" id="tab-ledger-nav" onclick="switchScreen('ledger')">5. Custody/Ledger</button>
+<button class="nav-chip px-3 py-1 rounded-full font-medium text-textMuted hover:text-white transition-all flex items-center gap-1" id="tab-sms-nav" onclick="switchScreen('sms')">
+<span class="w-1.5 h-1.5 rounded-full bg-electricSky"></span>
+<span>SMS Simulator</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS: CENTERED HYPER-MODERN MOBILE VIEWPORT -->
+<main class="w-full flex-1 flex flex-col items-center justify-center py-6 px-4 relative">
+<!-- Ambient Backdrop Gradients -->
+<div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-emeraldGlow/10 rounded-full blur-[140px] pointer-events-none"></div>
+<div class="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-electricSky/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute top-1/3 left-1/5 w-[380px] h-[380px] bg-crimsonGlow/8 rounded-full blur-[100px] pointer-events-none"></div>
+<!-- PHONE FRAME (412px x 880px Titanium Modern Shell) -->
+<div class="w-full max-w-[412px] h-[880px] bg-canvas rounded-[48px] p-3 shadow-phone-frame relative flex flex-col border border-white/10 overflow-hidden">
+<!-- Titanium Inner Rim Glow -->
+<div class="w-full h-full rounded-[40px] bg-gradient-to-b from-canvas via-obsidian to-canvas flex flex-col relative overflow-hidden border border-white/5">
+<!-- STATUS BAR & DYNAMIC ISLAND -->
+<div class="w-full pt-3 px-6 pb-2 flex items-center justify-between text-xs font-mono text-textMuted z-30 select-none">
+<span class="font-semibold tracking-wider text-white">14:20</span>
+<!-- Dynamic Island Capsule -->
+<div class="px-3.5 py-1 rounded-full bg-black/90 border border-white/15 flex items-center gap-2 shadow-inner">
+<span class="w-2 h-2 rounded-full bg-crimsonGlow animate-ping"></span>
+<span class="text-[10px] font-mono font-medium text-crimsonGlow uppercase tracking-wider">Tier 0 Run</span>
+<span class="text-white/30 text-[10px]">|</span>
+<span class="text-[10px] text-white font-mono">4h 58m</span>
+</div>
+<div class="flex items-center gap-1.5 text-white">
+<span class="text-[11px] font-mono text-emeraldGlow font-bold">2G EDGE</span>
+<span class="material-symbols-outlined text-[15px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[15px]">battery_5_bar</span>
+</div>
+</div>
+<!-- MAIN INTERNAL SCREEN CONTAINER -->
+<div class="flex-1 w-full overflow-y-auto scrollbar-none px-4 pt-2 pb-24 relative" id="screen-container">
+<!-- ============================================== -->
+<!-- SCREEN 1: TODAY (THE LIVING PULSE HOME) -->
+<!-- ============================================== -->
+<div class="screen-view space-y-4" id="screen-today">
+<!-- Operator Identity & Capacity Quick Pill -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-emeraldGlow/20 to-surfaceBorder p-0.5 border border-emeraldGlow/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-emeraldGlow text-[20px]">local_shipping</span>
+</div>
+<div>
+<h2 class="text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
+                    Joshi Fleet Services
+                    <span class="material-symbols-outlined text-emeraldGlow text-[16px]">verified</span>
+</h2>
+<p class="text-[11px] font-mono text-textMuted">Hadapsar Yard · Node #490</p>
+</div>
+</div>
+<!-- Liveness Status Indicator Pill -->
+<button class="px-2.5 py-1 rounded-full glass-card border-emeraldGlow/30 flex items-center gap-1.5 hover:border-emeraldGlow transition-all" onclick="toggleCheckinDrawer()">
+<span class="w-2 h-2 rounded-full bg-emeraldGlow animate-pulse"></span>
+<span class="text-[11px] font-mono font-semibold text-emeraldGlow">50% ACTIVE</span>
+</button>
+</div>
+<!-- LIVING PULSE CENTRAL HERO: CORRIDOR HEALTH GAUGE -->
+<div class="glass-card rounded-3xl p-4 relative overflow-hidden group">
+<!-- Radial Gradient Glow behind gauge -->
+<div class="absolute -right-10 -bottom-10 w-44 h-44 bg-emeraldGlow/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex justify-between items-start mb-3">
+<div>
+<span class="text-[10px] font-mono uppercase tracking-widest text-textSubtle font-semibold">Pulse Telemetry</span>
+<h3 class="text-lg font-extrabold text-white tracking-tight leading-tight">East Pune Corridor</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-amberWarn/15 text-amberWarn border border-amberWarn/30 font-semibold">
+                  1 BROKEN LINK
+                </span>
+</div>
+<!-- Organic Pulse Visualizer Ring + Stats -->
+<div class="grid grid-cols-12 gap-3 items-center">
+<div class="col-span-5 relative flex items-center justify-center">
+<!-- Circular SVG Telemetry Gauge -->
+<svg class="w-28 h-28 -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="40" stroke="rgba(255,255,255,0.08)" stroke-width="8"></circle>
+<!-- Emerald connected segment -->
+<circle cx="50" cy="50" fill="none" r="40" stroke="#10B981" stroke-dasharray="200" stroke-dashoffset="65" stroke-linecap="round" stroke-width="8"></circle>
+<!-- Broken segment indicator -->
+<circle cx="50" cy="50" fill="none" r="40" stroke="#EF4444" stroke-dasharray="251" stroke-dashoffset="230" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center text-center">
+<span class="text-xl font-extrabold text-white font-mono leading-none">6/7</span>
+<span class="text-[9px] font-mono text-textMuted uppercase mt-0.5">Linked</span>
+</div>
+</div>
+<div class="col-span-7 space-y-2">
+<div class="bg-black/30 rounded-2xl p-2.5 border border-white/5">
+<div class="flex justify-between items-center text-xs">
+<span class="text-textMuted">Operational Capacity</span>
+<span class="font-mono font-bold text-white">2 / 4 Vans</span>
+</div>
+<div class="w-full bg-white/10 h-1.5 rounded-full mt-1.5 overflow-hidden flex">
+<div class="bg-emeraldGlow h-full w-1/2 rounded-full"></div>
+</div>
+</div>
+<div class="bg-black/30 rounded-2xl p-2.5 border border-white/5 flex justify-between items-center text-xs">
+<div>
+<span class="text-textMuted block text-[10px]">DIESEL CREDIT</span>
+<span class="font-mono font-bold text-white">65 Litres</span>
+</div>
+<span class="text-[10px] font-mono text-emeraldGlow bg-emeraldGlow/10 px-2 py-0.5 rounded border border-emeraldGlow/20">Swargate Valid</span>
+</div>
+</div>
+</div>
+<!-- Interactive Linear Living Corridor Strip -->
+<div class="mt-4 pt-3 border-t border-white/10">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-textMuted">Physical Route Continuity</span>
+<button class="text-[10px] font-semibold text-electricSky hover:underline flex items-center gap-0.5" onclick="switchScreen('chain')">
+                    Interactive Map <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+</button>
+</div>
+<!-- Animated node pulse track -->
+<div class="flex items-center justify-between gap-1 py-1">
+<!-- Ravi -->
+<div class="flex-1 flex flex-col items-center gap-1 group/node cursor-pointer" onclick="switchScreen('chain')">
+<div class="w-full h-1.5 rounded-full bg-emeraldGlow shadow-glow-emerald"></div>
+<span class="text-[9px] font-mono text-textMuted truncate max-w-[48px]">Ravi Ag</span>
+</div>
+<!-- Connector -->
+<div class="w-2 h-0.5 bg-white/20"></div>
+<!-- Kaveri (Severed) -->
+<div class="flex-1 flex flex-col items-center gap-1 cursor-pointer" onclick="switchScreen('chain')">
+<div class="w-full h-1.5 rounded-full bg-crimsonGlow animate-pulse"></div>
+<span class="text-[9px] font-mono text-crimsonGlow font-bold truncate max-w-[48px]">Kaveri ✕</span>
+</div>
+<!-- Connector -->
+<div class="w-2 h-0.5 bg-white/20"></div>
+<!-- Joshi Fleet (User) -->
+<div class="flex-1 flex flex-col items-center gap-1 cursor-pointer" onclick="switchScreen('chain')">
+<div class="w-full h-2 rounded-full bg-electricSky ring-2 ring-electricSky/40"></div>
+<span class="text-[9px] font-mono text-electricSky font-bold truncate max-w-[48px]">YOU</span>
+</div>
+<!-- Connector -->
+<div class="w-2 h-0.5 bg-white/20"></div>
+<!-- Gandhi Pharma -->
+<div class="flex-1 flex flex-col items-center gap-1 cursor-pointer" onclick="switchScreen('task')">
+<div class="w-full h-1.5 rounded-full bg-amberWarn"></div>
+<span class="text-[9px] font-mono text-amberWarn truncate max-w-[48px]">Gandhi</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ACTIONABLE CRISIS CARDS: HIGH-PRIORITY PRESSURE POINTS -->
+<div class="space-y-2.5">
+<div class="flex items-center justify-between px-1">
+<span class="text-xs font-mono font-semibold tracking-wider text-textMuted uppercase">Priority Deployments</span>
+<span class="text-[10px] font-mono text-crimsonGlow bg-crimsonGlow/10 px-2 py-0.5 rounded-full border border-crimsonGlow/30">1 Critical Tier 0</span>
+</div>
+<!-- CARD 1: TIER 0 CRITICAL INSULIN RUN (The Emergency Hook) -->
+<div class="glass-card glass-card-hover rounded-3xl p-4 border-crimsonGlow/30 relative overflow-hidden cursor-pointer transition-all" onclick="switchScreen('task')">
+<div class="absolute -right-8 -top-8 w-24 h-24 bg-crimsonGlow/20 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-crimsonGlow text-white uppercase tracking-wider">
+                      Tier 0 // Urgent
+                    </span>
+<span class="text-[11px] font-mono text-crimsonGlow font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-crimsonGlow animate-ping"></span>
+                      4h 58m Spoil Window
+                    </span>
+</div>
+<span class="text-xs font-mono text-textMuted">T214</span>
+</div>
+<div class="mt-2.5">
+<h4 class="text-base font-bold text-white leading-tight">Gandhi Pharmacy · 400kg Insulin</h4>
+<p class="text-xs text-textMuted mt-1">Requires continuous active chill &lt;8°C. Cold storage failing in Sector 4.</p>
+</div>
+<div class="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-electricSky text-[18px]">alt_route</span>
+<span class="text-xs font-mono text-white">Pickup Hadapsar ➔ Swargate Safe Pt</span>
+</div>
+<span class="px-3 py-1 rounded-full bg-emeraldGlow text-obsidian text-xs font-bold font-mono tracking-wider flex items-center gap-1">
+                    Accept <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+</div>
+</div>
+<!-- CARD 2: BROKEN UPSTREAM LINK (RE-LINK OPPORTUNITY) -->
+<div class="glass-card glass-card-hover rounded-3xl p-4 border-amberWarn/30 relative overflow-hidden cursor-pointer transition-all" onclick="switchScreen('chain')">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amberWarn/20 text-amberWarn border border-amberWarn/30 uppercase">
+                    Corridor Severed
+                  </span>
+<span class="text-[11px] font-mono text-textMuted">No Reply: 6h</span>
+</div>
+<div class="mt-2">
+<h4 class="text-sm font-bold text-white">Kaveri Cold Chain Disconnected</h4>
+<p class="text-xs text-textMuted mt-0.5">North Chakan route blocked. 3 verified substitutes available nearby.</p>
+</div>
+<div class="mt-3 flex items-center justify-between bg-black/30 p-2.5 rounded-2xl border border-white/5">
+<span class="text-xs text-electricSky font-mono font-medium">3 Local Chilled Trucks Ready</span>
+<span class="text-xs font-bold text-white underline underline-offset-2 flex items-center gap-1">
+                    Select Substitute <span class="material-symbols-outlined text-[14px]">call_split</span>
+</span>
+</div>
+</div>
+<!-- CARD 3: ORPHAN ASSET CUSTODY (RICE TONNES) -->
+<div class="glass-card glass-card-hover rounded-3xl p-4 border-electricSky/30 cursor-pointer transition-all" onclick="switchScreen('ledger')">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-electricSky/20 text-electricSky border border-electricSky/30 uppercase">
+                    Orphan Asset Custody
+                  </span>
+<span class="text-[11px] font-mono text-emeraldGlow">2/2 Vouched</span>
+</div>
+<div class="mt-2">
+<h4 class="text-sm font-bold text-white">Raju Provisions · 2 Tonnes Rice</h4>
+<p class="text-xs text-textMuted mt-0.5">Owner evacuated. Meena Stores requesting emergency custody loan.</p>
+</div>
+<div class="mt-3 flex items-center justify-between text-xs text-textMuted">
+<span>Emergency IOU Principle: 0 Cash Req.</span>
+<span class="text-electricSky font-mono font-semibold flex items-center gap-1">
+                    Review Permit <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- SCREEN 2: CONSTELLATION NETWORK CANVAS (SPATIAL GRAPH) -->
+<!-- ============================================== -->
+<div class="screen-view space-y-4 hidden" id="screen-chain">
+<!-- Header bar with interactive state -->
+<div class="flex items-center justify-between">
+<div>
+<span class="text-[10px] font-mono text-emeraldGlow uppercase tracking-widest font-semibold">Mesh Topology</span>
+<h2 class="text-base font-extrabold text-white">Linear Arterial Constellation</h2>
+</div>
+<button class="text-[10px] font-mono text-textMuted hover:text-white px-2 py-1 rounded bg-white/5 border border-white/10" onclick="resetChainDemo()">
+                Reset Demo
+              </button>
+</div>
+<!-- Spatial Interactive Graph Container -->
+<div class="glass-card rounded-3xl p-4 border-white/10 relative overflow-hidden">
+<div class="text-[10px] font-mono text-textSubtle mb-2 flex items-center justify-between">
+<span>TACTICAL CORRIDOR // TAP TO INSPECT</span>
+<span class="text-crimsonGlow font-bold" id="topology-status">1 DISCONNECTED NODE</span>
+</div>
+<!-- SVG Interactive Node Map -->
+<div class="relative w-full h-[320px] bg-black/40 rounded-2xl border border-white/5 flex items-center justify-center overflow-hidden">
+<!-- Spatial Mesh Grid Background -->
+<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#38BDF8_1px,transparent_1px)] [background-size:18px_18px]"></div>
+<svg class="w-full h-full" fill="none" viewbox="0 0 340 310" xmlns="http://www.w3.org/2000/svg">
+<!-- Flowing Connection Lines -->
+<!-- Segment 1: Ravi -> Kaveri (Severed Red) -->
+<path d="M 60 70 L 170 80" id="svg-line-severed" stroke="#EF4444" stroke-dasharray="6 4" stroke-width="3"></path>
+<!-- Segment 2: Kaveri -> Joshi (Severed Red) -->
+<path d="M 170 80 L 170 170" id="svg-line-kaveri-joshi" stroke="#EF4444" stroke-dasharray="6 4" stroke-width="3"></path>
+<!-- Active Segment: Joshi -> Swargate -> Gandhi Pharma (Emerald Flowing) -->
+<path class="flow-active" d="M 170 170 L 100 240" stroke="#10B981" stroke-width="3"></path>
+<path class="flow-active" d="M 100 240 L 250 245" stroke="#10B981" stroke-width="3"></path>
+<!-- Alternative Backup Route Line (Dotted to Baramati) -->
+<path class="opacity-30" d="M 60 70 L 270 90 L 170 170" id="svg-line-substitute" stroke="#38BDF8" stroke-dasharray="4 4" stroke-width="2"></path>
+<!-- NODE 1: Ravi Agencies (Chakan Upstream) -->
+<g class="cursor-pointer" onclick="selectNode('ravi')">
+<circle cx="60" cy="70" fill="#121721" r="18" stroke="#10B981" stroke-width="2"></circle>
+<circle cx="60" cy="70" fill="#10B981" r="6"></circle>
+<text fill="#94A3B8" font-family="'JetBrains Mono'" font-size="9" text-anchor="middle" x="60" y="102">Ravi Ag.</text>
+</g>
+<!-- NODE 2: Kaveri Cold Chain (SEVERED OR HEALED) -->
+<g class="cursor-pointer" id="svg-node-kaveri" onclick="selectNode('kaveri')">
+<circle class="animate-pulse" cx="170" cy="80" fill="#181014" id="svg-circle-kaveri" r="22" stroke="#EF4444" stroke-width="2.5"></circle>
+<text fill="#EF4444" font-family="'Plus Jakarta Sans'" font-size="14" font-weight="bold" id="svg-icon-kaveri" text-anchor="middle" x="170" y="85">✕</text>
+<text fill="#EF4444" font-family="'JetBrains Mono'" font-size="9" font-weight="bold" id="svg-lbl-kaveri" text-anchor="middle" x="170" y="116">Kaveri (Severed)</text>
+</g>
+<!-- NODE 3: JOSHI FLEET (OPERATOR / YOU) -->
+<g class="cursor-pointer" onclick="selectNode('joshi')">
+<circle cx="170" cy="170" fill="#0B132B" r="24" stroke="#38BDF8" stroke-width="2.5"></circle>
+<circle cx="170" cy="170" fill="#38BDF8" r="8"></circle>
+<text fill="#38BDF8" font-family="'JetBrains Mono'" font-size="10" font-weight="bold" text-anchor="middle" x="170" y="206">YOU (Joshi Fleet)</text>
+</g>
+<!-- NODE 4: Swargate Safe Point (Handoff Hub) -->
+<g class="cursor-pointer" onclick="selectNode('swargate')">
+<rect fill="#121721" height="36" rx="10" stroke="#10B981" stroke-width="2" width="40" x="80" y="222"></rect>
+<text fill="#FFFFFF" font-family="'Plus Jakarta Sans'" font-size="11" font-weight="bold" text-anchor="middle" x="100" y="244">SAFE</text>
+<text fill="#94A3B8" font-family="'JetBrains Mono'" font-size="9" text-anchor="middle" x="100" y="272">Swargate</text>
+</g>
+<!-- NODE 5: Gandhi Pharmacy (Destination Tier 0) -->
+<g class="cursor-pointer" onclick="selectNode('gandhi')">
+<circle cx="250" cy="245" fill="#241215" r="20" stroke="#F59E0B" stroke-width="2"></circle>
+<text fill="#F59E0B" font-family="'Plus Jakarta Sans'" font-size="12" font-weight="bold" text-anchor="middle" x="250" y="249">Rx</text>
+<text fill="#F59E0B" font-family="'JetBrains Mono'" font-size="9" font-weight="bold" text-anchor="middle" x="250" y="278">Gandhi Pharma</text>
+</g>
+<!-- SUBSTITUTE NODE: Baramati Chilled (Standby) -->
+<g class="cursor-pointer" id="svg-node-baramati" onclick="selectNode('baramati')">
+<circle cx="270" cy="90" fill="#121721" r="16" stroke="#38BDF8" stroke-dasharray="3 3" stroke-width="1.5"></circle>
+<circle cx="270" cy="90" fill="#38BDF8" r="4"></circle>
+<text fill="#38BDF8" font-family="'JetBrains Mono'" font-size="8" text-anchor="middle" x="270" y="118">Baramati (Alt)</text>
+</g>
+</svg>
+</div>
+<!-- Dynamic Node Detail & Substitute Action Sheet -->
+<div class="mt-3 p-3 bg-black/40 rounded-2xl border border-white/10 space-y-2" id="node-inspector">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-crimsonGlow animate-ping" id="inspect-pill"></span>
+<h4 class="text-xs font-bold text-white font-mono" id="inspect-title">Kaveri Cold Chain · Stranded</h4>
+</div>
+<span class="text-[10px] font-mono text-crimsonGlow bg-crimsonGlow/10 px-2 py-0.5 rounded border border-crimsonGlow/30" id="inspect-tag">CRITICAL CUT</span>
+</div>
+<p class="text-[11px] text-textMuted leading-relaxed" id="inspect-desc">
+                  Last known position: Chakan Tollgate 6h ago. Van battery &amp; radio telemetry silent. 400kg Tier 0 medical consignment stalled.
+                </p>
+<div class="pt-2 border-t border-white/10 flex items-center justify-between" id="substitute-action-box">
+<div class="text-[11px] font-mono text-white">
+<span class="text-emeraldGlow font-bold">Baramati Agri Chilling</span>
+<span class="block text-[10px] text-textMuted">3 vans · 4.2km away · 4°C ready</span>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-emeraldGlow text-obsidian text-xs font-bold font-mono tracking-wider shadow-glow-emerald hover:brightness-110 active:scale-95 transition-all" onclick="healNetworkWithBaramati()">
+                    PROPOSE SUBSTITUTE
+                  </button>
+</div>
+</div>
+</div>
+<!-- Corridor Rules Callout -->
+<div class="glass-card rounded-2xl p-3 border-white/10 text-xs text-textMuted flex items-center gap-2">
+<span class="material-symbols-outlined text-emeraldGlow text-[20px]">verified_user</span>
+<span>Autonomous Re-Linking: No centralized permission needed. Corridors self-heal when counterparties sign.</span>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- SCREEN 3: TASK TIER 0 (INSULIN RUN) -->
+<!-- ============================================== -->
+<div class="screen-view space-y-4 hidden" id="screen-task">
+<!-- Mission Priority Banner -->
+<div class="glass-card rounded-3xl p-4 border-crimsonGlow/40 relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-32 h-32 bg-crimsonGlow/15 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex justify-between items-start">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-crimsonGlow text-white tracking-widest uppercase">
+                  TIER 0 // CRITICAL LIFE SAFETY
+                </span>
+<span class="text-xs font-mono font-bold text-crimsonGlow bg-crimsonGlow/10 px-2 py-0.5 rounded border border-crimsonGlow/30">
+                  4h 58m LIMIT
+                </span>
+</div>
+<h2 class="text-xl font-extrabold text-white mt-2 leading-tight">400kg Insulin Consignment</h2>
+<p class="text-xs text-textMuted mt-0.5">Cold storage lost grid power in Hadapsar. 14 downstream diabetic dispensaries waiting.</p>
+<!-- Telemetry Metrics Bar -->
+<div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-white/10 text-center font-mono">
+<div class="bg-black/30 p-2 rounded-xl border border-white/5">
+<span class="text-[9px] text-textMuted block">CURRENT TEMP</span>
+<span class="text-sm font-bold text-emeraldGlow">4.8°C</span>
+</div>
+<div class="bg-black/30 p-2 rounded-xl border border-white/5">
+<span class="text-[9px] text-textMuted block">SPOIL THRESHOLD</span>
+<span class="text-sm font-bold text-amberWarn">8.0°C</span>
+</div>
+<div class="bg-black/30 p-2 rounded-xl border border-white/5">
+<span class="text-[9px] text-textMuted block">CREDIT VALUE</span>
+<span class="text-sm font-bold text-white">₹4,200</span>
+</div>
+</div>
+</div>
+<!-- RELAY LEGS TRACKER: MULTI-STAGE PROGRESS -->
+<div class="glass-card rounded-3xl p-4 border-white/10 space-y-3">
+<span class="text-[10px] font-mono uppercase tracking-widest text-textSubtle font-semibold block">Relay Legs Orchestration</span>
+<!-- Leg 1: Assigned to Joshi -->
+<div class="relative pl-5 border-l-2 border-emeraldGlow space-y-1">
+<div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-emeraldGlow border-2 border-canvas flex items-center justify-center">
+<span class="w-1.5 h-1.5 rounded-full bg-obsidian"></span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-white font-mono">LEG 1: HADAPSAR ➔ SWARGATE</span>
+<span class="text-[10px] font-mono text-emeraldGlow font-bold" id="task-step-tag">READY FOR PICKUP</span>
+</div>
+<p class="text-[11px] text-textMuted">Carrier: Joshi Fleet (Van MH-12-Q-4491, Active Refrigeration)</p>
+<p class="text-[10px] font-mono text-textSubtle">Handoff Contact: Officer Kadam (Swargate Safe Point)</p>
+</div>
+<!-- Leg 2: Standby Receiver -->
+<div class="relative pl-5 border-l-2 border-white/10 space-y-1 pt-2 opacity-60">
+<div class="absolute -left-[7px] top-2.5 w-3 h-3 rounded-full bg-white/20 border-2 border-canvas"></div>
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-textMuted font-mono">LEG 2: SWARGATE ➔ GANDHI PHARMA</span>
+<span class="text-[10px] font-mono text-textMuted">ON STANDBY</span>
+</div>
+<p class="text-[11px] text-textMuted">Carrier: Rider Shinde (Insulated 2-Wheeler Box)</p>
+</div>
+</div>
+<!-- TASK ACTION BUTTONS WITH EMERGENCY HAPTIC FEEL -->
+<div class="space-y-2 pt-1" id="task-actions-area">
+<button class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emeraldGlow to-emerald-600 text-obsidian text-sm font-extrabold font-mono tracking-wider shadow-glow-emerald hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2" id="btn-task-action" onclick="advanceTaskStep('pickup')">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span>CONFIRM CARGO PICKUP AT DEPOT</span>
+</button>
+<button class="w-full py-2.5 rounded-2xl glass-card text-xs font-mono text-electricSky hover:text-white border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-1.5" onclick="switchScreen('handoff')">
+<span>Skip to Handoff &amp; Fallback Screen</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- SCREEN 4: HANDOFF & FALLBACK PROTOCOL -->
+<!-- ============================================== -->
+<div class="screen-view space-y-4 hidden" id="screen-handoff">
+<!-- Handoff Card Header -->
+<div class="glass-card rounded-3xl p-4 border-electricSky/30 text-center relative overflow-hidden">
+<div class="absolute inset-0 bg-electricSky/5 pointer-events-none"></div>
+<span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-electricSky/20 text-electricSky border border-electricSky/30 uppercase tracking-widest">
+                TWO-PARTY HANDOFF PROTOCOL
+              </span>
+<h2 class="text-lg font-extrabold text-white mt-2">Swargate Safe Point Handoff</h2>
+<p class="text-xs text-textMuted mt-0.5">Provide authentication token to receiving carrier Rider Shinde.</p>
+<!-- Giant Cryptographic PIN Token -->
+<div class="my-4 py-3 px-6 bg-black/60 rounded-2xl border border-white/15 inline-block mx-auto shadow-inner">
+<span class="text-3xl font-mono font-black text-electricSky tracking-[0.3em] select-all">4 8 2 1</span>
+</div>
+<div class="text-[10px] font-mono text-textMuted flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-emeraldGlow text-[14px]">verified</span>
+<span>CRYPTOGRAPHICALLY BINDING TRANSIT TOKEN</span>
+</div>
+</div>
+<!-- Two Verification Pathways -->
+<div class="glass-card rounded-3xl p-4 border-white/10 space-y-3">
+<span class="text-[10px] font-mono uppercase tracking-widest text-textSubtle font-semibold block">Counterparty Verification</span>
+<!-- Mode 1: Enter PIN -->
+<div class="space-y-1.5">
+<label class="text-xs text-textMuted block font-mono">Or enter receiver's reciprocal PIN:</label>
+<div class="flex gap-2">
+<input class="flex-1 bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-center font-mono font-bold text-white text-base tracking-widest focus:border-electricSky focus:ring-0 outline-none" id="counterparty-pin" maxlength="4" placeholder="Enter 4 digits" type="text"/>
+<button class="px-4 py-2 rounded-xl bg-electricSky text-obsidian font-mono font-bold text-xs hover:brightness-110 transition-all" onclick="verifyHandoffPin()">
+                    VERIFY
+                  </button>
+</div>
+</div>
+<!-- OR Divider -->
+<div class="flex items-center gap-2 py-1">
+<div class="flex-1 h-px bg-white/10"></div>
+<span class="text-[10px] font-mono text-textSubtle">OR FALLBACK</span>
+<div class="flex-1 h-px bg-white/10"></div>
+</div>
+<!-- Mode 2: Attested Fallback Protocol (Receiver Phone Dead / Offline) -->
+<div class="bg-amberWarn/10 rounded-2xl p-3 border border-amberWarn/30 space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-amberWarn font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">no_cell</span>
+                    Receiver Phone Dead / Offline?
+                  </span>
+<button class="text-[10px] font-mono text-amberWarn font-bold underline" onclick="toggleFallbackPhoto()">
+                    Fallback Camera
+                  </button>
+</div>
+<p class="text-[11px] text-textMuted leading-tight">
+                  Take a geotagged photo of cargo with Safe Point Officer Kadam. The network accepts verified physical custody attestations.
+                </p>
+<!-- Hidden Fallback Camera Simulation -->
+<div class="hidden pt-2 space-y-2" id="fallback-camera-box">
+<div class="w-full h-28 bg-black/70 rounded-xl border border-white/20 flex flex-col items-center justify-center text-center p-2">
+<span class="material-symbols-outlined text-white/50 text-[28px]">photo_camera</span>
+<span class="text-[10px] font-mono text-emeraldGlow mt-1">GEOTAG: 18.5018° N, 73.8636° E · SWARGATE YARD</span>
+<span class="text-[9px] text-textMuted">Witness: Officer Kadam (#CAD-8812)</span>
+</div>
+<button class="w-full py-2 rounded-xl bg-amberWarn text-obsidian font-mono font-bold text-xs hover:brightness-110 transition-all" onclick="confirmFallbackSuccess()">
+                    SUBMIT WITNESS ATTESTATION
+                  </button>
+</div>
+</div>
+</div>
+<!-- Success State Banner (Hidden by default) -->
+<div class="hidden glass-card rounded-2xl p-3 border-emeraldGlow/40 bg-emeraldGlow/10 text-center space-y-1" id="handoff-success-toast">
+<span class="text-xs font-bold font-mono text-emeraldGlow flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                HANDOFF COMPLETED · IOU RECORDED
+              </span>
+<p class="text-[11px] text-textMuted">₹4,200 obligation registered to Gandhi Pharmacy in the zero-cash ledger.</p>
+<button class="text-xs font-mono text-emeraldGlow font-bold underline mt-1 block" onclick="switchScreen('ledger')">
+                View Bilateral Ledger ➔
+              </button>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- SCREEN 5: ORPHAN CUSTODY & FINANCIAL LEDGER -->
+<!-- ============================================== -->
+<div class="screen-view space-y-4 hidden" id="screen-ledger">
+<!-- SECTION 1: ORPHAN ASSET CUSTODY LOAN SHEET -->
+<div class="glass-card rounded-3xl p-4 border-electricSky/30 space-y-3 relative overflow-hidden">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-[10px] font-mono uppercase tracking-widest text-electricSky font-semibold">Orphan Asset Sheet</span>
+<h3 class="text-base font-extrabold text-white">2 Tonnes Sona Masoori Rice</h3>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-electricSky/15 text-electricSky border border-electricSky/30 font-bold">
+                  ORP-992
+                </span>
+</div>
+<div class="p-2.5 bg-black/40 rounded-2xl border border-white/5 space-y-1">
+<p class="text-xs text-white">
+<strong>Location:</strong> Raju Provisions (Shop 14, Old Market)
+                </p>
+<p class="text-[11px] text-textMuted leading-relaxed">
+<em>Relay Custody Doctrine:</em> Custody is a temporary loan, never ownership. Every kg distributed is recorded for reconciliation when the rightful owner returns.
+                </p>
+</div>
+<!-- Neighbour Vouching Progress (2 Required) -->
+<div class="space-y-1.5">
+<span class="text-[10px] font-mono text-textMuted uppercase">Neighbour Attestations (2 / 2 Verified):</span>
+<div class="space-y-1 text-xs font-mono">
+<div class="flex items-center justify-between p-2 rounded-xl bg-emeraldGlow/10 border border-emeraldGlow/20 text-emeraldGlow">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+                      Meena Stores (Neighbour Kirana)
+                    </span>
+<span class="font-bold text-[10px]">VOUCHED</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-xl bg-emeraldGlow/10 border border-emeraldGlow/20 text-emeraldGlow">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+                      Hadapsar Mandi Association
+                    </span>
+<span class="font-bold text-[10px]">VOUCHED</span>
+</div>
+</div>
+</div>
+<!-- Custody Token Authorized -->
+<div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+<div>
+<span class="text-textSubtle block text-[10px]">CUSTODY PERMIT</span>
+<span class="text-white font-bold">CUST-883-VAL</span>
+</div>
+<span class="text-emeraldGlow text-[11px]">Valid Until Day 3, 18:00</span>
+</div>
+</div>
+<!-- SECTION 2: BILATERAL ZERO-CASH IOU LEDGER -->
+<div class="glass-card rounded-3xl p-4 border-white/10 space-y-3">
+<div class="flex justify-between items-center">
+<div>
+<span class="text-[10px] font-mono uppercase tracking-widest text-textSubtle font-semibold">Bilateral Obligations</span>
+<h3 class="text-base font-extrabold text-white">Zero-Cash Emergency Ledger</h3>
+</div>
+<span class="text-[10px] font-mono text-emeraldGlow bg-emeraldGlow/10 px-2 py-0.5 rounded border border-emeraldGlow/20">SETTLE POST-CRISIS</span>
+</div>
+<!-- Metric Balance Summary Cards -->
+<div class="grid grid-cols-2 gap-2">
+<div class="p-3 bg-black/40 rounded-2xl border border-emeraldGlow/20">
+<span class="text-[10px] font-mono text-textMuted uppercase block">You Are Owed</span>
+<span class="text-xl font-mono font-extrabold text-emeraldGlow block mt-0.5">₹4,200</span>
+<span class="text-[9px] font-mono text-textSubtle">1 Verified Task Claim</span>
+</div>
+<div class="p-3 bg-black/40 rounded-2xl border border-crimsonGlow/20">
+<span class="text-[10px] font-mono text-textMuted uppercase block">You Owe</span>
+<span class="text-xl font-mono font-extrabold text-crimsonGlow block mt-0.5">₹1,800</span>
+<span class="text-[9px] font-mono text-textSubtle">Swargate Fuel Allocation</span>
+</div>
+</div>
+<!-- Immutable Entry Trail -->
+<div class="space-y-1.5 pt-1">
+<span class="text-[10px] font-mono text-textMuted uppercase">Cryptographic Audit Log:</span>
+<div class="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
+<div>
+<span class="font-bold text-white block">Gandhi Pharmacy</span>
+<span class="text-[10px] font-mono text-textMuted">Task T214 · Insulin Delivery Handoff</span>
+</div>
+<div class="text-right">
+<span class="font-mono font-bold text-emeraldGlow">+₹4,200</span>
+<span class="block text-[9px] font-mono text-textSubtle">14:32 TODAY</span>
+</div>
+</div>
+<div class="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
+<div>
+<span class="font-bold text-white block">Swargate Fuel Depot</span>
+<span class="text-[10px] font-mono text-textMuted">Diesel Voucher #912 (25 Litres)</span>
+</div>
+<div class="text-right">
+<span class="font-mono font-bold text-crimsonGlow">-₹1,800</span>
+<span class="block text-[9px] font-mono text-textSubtle">11:15 TODAY</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- SCREEN 6: SMS FAILOVER & LOW-BANDWIDTH TERMINAL -->
+<!-- ============================================== -->
+<div class="screen-view space-y-4 hidden" id="screen-sms">
+<!-- SMS Header Notice -->
+<div class="glass-card rounded-3xl p-4 border-electricSky/30 space-y-1">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-mono font-bold text-electricSky uppercase tracking-wider flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-electricSky animate-pulse"></span>
+                  2G EDGE / SMS PARITY LAYER
+                </span>
+<span class="text-[10px] font-mono text-textMuted">NO INTERNET NEEDED</span>
+</div>
+<h3 class="text-sm font-bold text-white">Full Relay Protocol via 1-Tap Keywords</h3>
+<p class="text-xs text-textMuted">
+                When data towers crash, Relay continues over standard SMS to shortcode <strong>54040</strong>.
+              </p>
+</div>
+<!-- Terminal SMS Conversation Shell -->
+<div class="bg-black/80 rounded-3xl p-4 border border-white/15 space-y-3 font-mono text-xs shadow-inner">
+<div class="flex justify-between items-center pb-2 border-b border-white/10 text-[10px] text-textSubtle">
+<span>CONVERSATION: +91 98200 RELAY</span>
+<span>SIGNAL: 100% GSM</span>
+</div>
+<!-- Message Stream -->
+<div class="space-y-2 h-[260px] overflow-y-auto scrollbar-none pr-1" id="sms-stream">
+<!-- Message 1 -->
+<div class="bg-white/10 text-textPrimary p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] border border-white/5">
+<span class="text-[9px] text-textSubtle block font-bold text-emeraldGlow">RELAY CORE (14:10):</span>
+                  Are you operating today? Reply: <strong>1</strong> (YES), <strong>2</strong> (NO).
+                </div>
+<div class="bg-emeraldGlow text-obsidian p-2.5 rounded-2xl rounded-tr-sm ml-auto max-w-[40%] font-bold text-right shadow-glow-emerald">
+                  1
+                </div>
+<!-- Message 2 -->
+<div class="bg-white/10 text-textPrimary p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] border border-white/5">
+<span class="text-[9px] text-textSubtle block font-bold text-emeraldGlow">RELAY CORE (14:11):</span>
+                  Capacity? Reply: <strong>1</strong> (Quarter), <strong>2</strong> (Half), <strong>3</strong> (Full).
+                </div>
+<div class="bg-emeraldGlow text-obsidian p-2.5 rounded-2xl rounded-tr-sm ml-auto max-w-[40%] font-bold text-right shadow-glow-emerald">
+                  2
+                </div>
+<!-- Message 3 -->
+<div class="bg-white/10 text-textPrimary p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] border border-white/5">
+<span class="text-[9px] text-textSubtle block font-bold text-crimsonGlow">RELAY CORE (14:20):</span>
+                  URGENT TIER 0: Pickup 400kg Insulin Hadapsar to Swargate. Code <strong>4821</strong>. Reply <strong>ACCEPT</strong>.
+                </div>
+</div>
+<!-- Quick SMS Keyword Action Bar -->
+<div class="pt-2 border-t border-white/10 space-y-2">
+<div class="grid grid-cols-3 gap-1.5 text-[10px]">
+<button class="py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/10 font-bold transition-all" onclick="sendQuickSms('ACCEPT')">
+                    ACCEPT
+                  </button>
+<button class="py-1.5 bg-white/10 hover:bg-white/20 text-emeraldGlow rounded-lg border border-white/10 font-bold transition-all" onclick="sendQuickSms('DONE 4821')">
+                    DONE 4821
+                  </button>
+<button class="py-1.5 bg-white/10 hover:bg-white/20 text-textMuted rounded-lg border border-white/10 font-bold transition-all" onclick="sendQuickSms('STATUS')">
+                    STATUS
+                  </button>
+</div>
+<!-- Input form -->
+<div class="flex gap-2">
+<input class="flex-1 bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-emeraldGlow" id="sms-custom-input" onkeydown="if(event.key==='Enter') executeCustomSms()" placeholder="Type SMS command..." type="text"/>
+<button class="px-3 py-2 rounded-xl bg-emeraldGlow text-obsidian font-bold text-xs" onclick="executeCustomSms()">
+                    SEND
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- PERSISTENT SLEEK BOTTOM FLOATING NAVIGATION BAR -->
+<!-- ============================================== -->
+<nav class="absolute bottom-3 left-4 right-4 h-16 rounded-full glass-card border border-white/15 px-3 flex items-center justify-between shadow-2xl z-40 bg-black/70 backdrop-blur-2xl">
+<!-- 1. Today -->
+<button class="flex-1 flex flex-col items-center justify-center text-emeraldGlow transition-all" id="tab-today" onclick="switchScreen('today')">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-[9px] font-mono font-bold mt-0.5">Today</span>
+</button>
+<!-- 2. Constellation -->
+<button class="flex-1 flex flex-col items-center justify-center text-textMuted hover:text-white transition-all" id="tab-chain" onclick="switchScreen('chain')">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+<span class="text-[9px] font-mono font-bold mt-0.5">Chain</span>
+</button>
+<!-- 3. Task Center (Floating glow badge) -->
+<button class="flex-1 flex flex-col items-center justify-center text-textMuted hover:text-white relative transition-all" id="tab-task" onclick="switchScreen('task')">
+<span class="w-8 h-8 rounded-full bg-crimsonGlow/20 border border-crimsonGlow/40 flex items-center justify-center text-crimsonGlow">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+</span>
+<span class="w-2 h-2 rounded-full bg-crimsonGlow absolute top-0.5 right-4 animate-ping"></span>
+</button>
+<!-- 4. Handoff -->
+<button class="flex-1 flex flex-col items-center justify-center text-textMuted hover:text-white transition-all" id="tab-handoff" onclick="switchScreen('handoff')">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+<span class="text-[9px] font-mono font-bold mt-0.5">Handoff</span>
+</button>
+<!-- 5. Ledger -->
+<button class="flex-1 flex flex-col items-center justify-center text-textMuted hover:text-white transition-all" id="tab-ledger" onclick="switchScreen('ledger')">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+<span class="text-[9px] font-mono font-bold mt-0.5">Ledger</span>
+</button>
+</nav>
+<!-- Home Bar Indicator -->
+<div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50"></div>
+</div>
+</div>
+</main>
+<!-- ============================================== -->
+<!-- MODAL: ARCHITECTURAL DESIGN DIRECTION CRITIQUE -->
+<!-- ============================================== -->
+<div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden" id="direction-modal">
+<div class="max-w-4xl w-full bg-canvas border border-white/15 rounded-3xl p-6 max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl">
+<!-- Modal Header -->
+<div class="flex items-center justify-between border-b border-white/10 pb-4">
+<div>
+<span class="text-xs font-mono text-electricSky font-bold uppercase tracking-wider">Design Architecture Dossier</span>
+<h2 class="text-2xl font-extrabold text-white">Three Distinct Visual Directions Evaluated</h2>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center" onclick="toggleDirectionModal()">
+          ✕
+        </button>
+</div>
+<!-- 3 DIRECTION CARDS GRID -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- DIRECTION 1: Living Pulse / Kinetic Constellation (RECOMMENDED & BUILT) -->
+<div class="glass-card rounded-2xl p-4 border-2 border-emeraldGlow/60 bg-emeraldGlow/5 space-y-3 relative">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emeraldGlow text-obsidian uppercase">RECOMMENDED</span>
+<span class="text-xs font-mono text-emeraldGlow font-bold">Score: 9.8/10</span>
+</div>
+<h3 class="text-lg font-bold text-white leading-tight">1. Kinetic Constellation &amp; Living Pulse</h3>
+<p class="text-xs text-textMuted leading-relaxed">
+            Organic dark-mode obsidian glass with flowing particle streams along active supply corridors. Visualizes supply chains as living human networks rather than cold bureaucratic tables.
+          </p>
+<ul class="text-[11px] font-mono text-textMuted space-y-1">
+<li class="text-emeraldGlow">✓ Immediate triage comprehension</li>
+<li class="text-emeraldGlow">✓ Tactile, consumer-grade delight</li>
+<li class="text-emeraldGlow">✓ Real-time self-healing re-linking</li>
+</ul>
+</div>
+<!-- DIRECTION 2: Swiss Minimalist Editorial -->
+<div class="glass-card rounded-2xl p-4 border-white/10 space-y-3 opacity-80 hover:opacity-100 transition-all">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-white/10 text-white uppercase">ALTERNATIVE</span>
+<span class="text-xs font-mono text-textMuted font-bold">Score: 7.9/10</span>
+</div>
+<h3 class="text-lg font-bold text-white leading-tight">2. Swiss Minimalist Editorial</h3>
+<p class="text-xs text-textMuted leading-relaxed">
+            Stark stark monochrome, strict typography grids, high-contrast black/white newsprint look. Excellent for daylight reading, but lacks organic spatial feedback during chaotic crisis moments.
+          </p>
+<ul class="text-[11px] font-mono text-textMuted space-y-1">
+<li class="text-white">✓ Zero visual clutter</li>
+<li class="text-crimsonGlow">✕ High cognitive load in crisis</li>
+<li class="text-crimsonGlow">✕ Impersonal and sterile</li>
+</ul>
+</div>
+<!-- DIRECTION 3: Tactile Spatial Neomorphic -->
+<div class="glass-card rounded-2xl p-4 border-white/10 space-y-3 opacity-80 hover:opacity-100 transition-all">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-white/10 text-white uppercase">ALTERNATIVE</span>
+<span class="text-xs font-mono text-textMuted font-bold">Score: 8.2/10</span>
+</div>
+<h3 class="text-lg font-bold text-white leading-tight">3. Tactile Spatial Hardware Rail</h3>
+<p class="text-xs text-textMuted leading-relaxed">
+            Emulates ruggedized military walkie-talkies and avionics dashboards. Satisfying tactile switches, but overly heavy for daily civilian drivers operating commercial tempos.
+          </p>
+<ul class="text-[11px] font-mono text-textMuted space-y-1">
+<li class="text-white">✓ Physical ruggedness cues</li>
+<li class="text-crimsonGlow">✕ Slow screen density on mobile</li>
+<li class="text-crimsonGlow">✕ Clunky multi-step workflows</li>
+</ul>
+</div>
+</div>
+<!-- Synthesis Note -->
+<div class="p-4 bg-white/5 rounded-2xl border border-white/10 text-xs text-textMuted leading-relaxed">
+<strong>Architectural Verdict:</strong> Direction 1 (Kinetic Constellation) was selected and engineered into this prototype because it provides the fastest pattern recognition for truck operators under extreme physical stress. Nodes visibly pulse, broken connections scream with crimson aurora, and re-linking feels like restoring power to an electric rail.
+      </div>
+</div>
+</div>
+<!-- JAVASCRIPT STATE ENGINE & INTERACTIVE LOGIC -->
+<script>
+    let activeScreen = 'today';
+    let isCorridorHealed = false;
+    let taskProgress = 0; // 0: unpicked, 1: picked, 2: at swargate
+
+    function switchScreen(screenId) {
+      activeScreen = screenId;
+      
+      // Hide all screen contents
+      document.querySelectorAll('.screen-view').forEach(el => el.classList.add('hidden'));
+      
+      // Show targeted screen
+      const target = document.getElementById(`screen-${screenId}`);
+      if (target) {
+        target.classList.remove('hidden');
+      }
+
+      // Reset bottom nav classes
+      ['today', 'chain', 'task', 'handoff', 'ledger'].forEach(tab => {
+        const btn = document.getElementById(`tab-${tab}`);
+        if (btn) {
+          btn.className = "flex-1 flex flex-col items-center justify-center text-textMuted hover:text-white transition-all";
+        }
+      });
+
+      // Highlight active bottom tab
+      const activeBtn = document.getElementById(`tab-${screenId}`);
+      if (activeBtn) {
+        activeBtn.className = "flex-1 flex flex-col items-center justify-center text-emeraldGlow font-bold transition-all";
+      }
+
+      // Highlight top quick jumpers
+      document.querySelectorAll('.nav-chip').forEach(chip => {
+        chip.className = "nav-chip px-3 py-1 rounded-full font-medium text-textMuted hover:text-white transition-all";
+      });
+      const topChip = document.getElementById(`tab-${screenId}-nav`);
+      if (topChip) {
+        topChip.className = "nav-chip px-3 py-1 rounded-full font-bold bg-emeraldGlow text-obsidian shadow-glow-emerald transition-all";
+      }
+    }
+
+    // HEAL THE NETWORK INTERACTIVELY: TRANSFORMS BROKEN LINK TO LUMINOUS EMERALD
+    function healNetworkWithBaramati() {
+      isCorridorHealed = true;
+
+      // Animate SVG Line
+      const severedLine = document.getElementById('svg-line-severed');
+      const kaveriJoshiLine = document.getElementById('svg-line-kaveri-joshi');
+      const kaveriCircle = document.getElementById('svg-circle-kaveri');
+      const kaveriIcon = document.getElementById('svg-icon-kaveri');
+      const kaveriLbl = document.getElementById('svg-lbl-kaveri');
+      const statusLbl = document.getElementById('topology-status');
+      const altLine = document.getElementById('svg-line-substitute');
+
+      if (severedLine) {
+        severedLine.setAttribute('stroke', '#10B981');
+        severedLine.setAttribute('stroke-width', '3');
+        severedLine.setAttribute('class', 'flow-active');
+      }
+      if (kaveriJoshiLine) {
+        kaveriJoshiLine.setAttribute('stroke', '#10B981');
+        kaveriJoshiLine.setAttribute('stroke-width', '3');
+        kaveriJoshiLine.setAttribute('class', 'flow-active');
+      }
+      if (kaveriCircle) {
+        kaveriCircle.setAttribute('stroke', '#10B981');
+        kaveriCircle.setAttribute('fill', '#0E241B');
+        kaveriCircle.classList.remove('animate-pulse');
+      }
+      if (kaveriIcon) {
+        kaveriIcon.textContent = "✓";
+        kaveriIcon.setAttribute('fill', '#10B981');
+      }
+      if (kaveriLbl) {
+        kaveriLbl.textContent = "Baramati (Re-linked)";
+        kaveriLbl.setAttribute('fill', '#10B981');
+      }
+      if (statusLbl) {
+        statusLbl.textContent = "CORRIDOR RESTORED (100% HEALTH)";
+        statusLbl.className = "text-emeraldGlow font-bold";
+      }
+
+      // Update Inspector Drawer
+      document.getElementById('inspect-pill').className = "w-2 h-2 rounded-full bg-emeraldGlow";
+      document.getElementById('inspect-title').textContent = "Baramati Agri Chilling (Assigned)";
+      document.getElementById('inspect-tag').textContent = "LINK RESTORED";
+      document.getElementById('inspect-tag').className = "text-[10px] font-mono text-emeraldGlow bg-emeraldGlow/10 px-2 py-0.5 rounded border border-emeraldGlow/30";
+      document.getElementById('inspect-desc').textContent = "Bypass route established via Chakan East. Consignment now routing directly through active refrigerated corridor.";
+      document.getElementById('substitute-action-box').innerHTML = `
+        <span class="text-xs font-mono text-emeraldGlow font-bold flex items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">check_circle</span>
+          Consignment transit locked and attested by both nodes.
+        </span>
+      `;
+    }
+
+    function resetChainDemo() {
+      isCorridorHealed = false;
+      const severedLine = document.getElementById('svg-line-severed');
+      const kaveriJoshiLine = document.getElementById('svg-line-kaveri-joshi');
+      const kaveriCircle = document.getElementById('svg-circle-kaveri');
+      const kaveriIcon = document.getElementById('svg-icon-kaveri');
+      const kaveriLbl = document.getElementById('svg-lbl-kaveri');
+      const statusLbl = document.getElementById('topology-status');
+
+      if (severedLine) {
+        severedLine.setAttribute('stroke', '#EF4444');
+        severedLine.removeAttribute('class');
+      }
+      if (kaveriJoshiLine) {
+        kaveriJoshiLine.setAttribute('stroke', '#EF4444');
+        kaveriJoshiLine.removeAttribute('class');
+      }
+      if (kaveriCircle) {
+        kaveriCircle.setAttribute('stroke', '#EF4444');
+        kaveriCircle.setAttribute('fill', '#181014');
+        kaveriCircle.classList.add('animate-pulse');
+      }
+      if (kaveriIcon) {
+        kaveriIcon.textContent = "✕";
+        kaveriIcon.setAttribute('fill', '#EF4444');
+      }
+      if (kaveriLbl) {
+        kaveriLbl.textContent = "Kaveri (Severed)";
+        kaveriLbl.setAttribute('fill', '#EF4444');
+      }
+      if (statusLbl) {
+        statusLbl.textContent = "1 DISCONNECTED NODE";
+        statusLbl.className = "text-crimsonGlow font-bold";
+      }
+
+      document.getElementById('inspect-pill').className = "w-2 h-2 rounded-full bg-crimsonGlow animate-ping";
+      document.getElementById('inspect-title').textContent = "Kaveri Cold Chain · Stranded";
+      document.getElementById('inspect-tag').textContent = "CRITICAL CUT";
+      document.getElementById('inspect-tag').className = "text-[10px] font-mono text-crimsonGlow bg-crimsonGlow/10 px-2 py-0.5 rounded border border-crimsonGlow/30";
+      document.getElementById('inspect-desc').textContent = "Last known position: Chakan Tollgate 6h ago. Van battery & radio telemetry silent. 400kg Tier 0 medical consignment stalled.";
+      document.getElementById('substitute-action-box').innerHTML = `
+        <div class="text-[11px] font-mono text-white">
+          <span class="text-emeraldGlow font-bold">Baramati Agri Chilling</span>
+          <span class="block text-[10px] text-textMuted">3 vans · 4.2km away · 4°C ready</span>
+        </div>
+        <button onclick="healNetworkWithBaramati()" class="px-3 py-1.5 rounded-full bg-emeraldGlow text-obsidian text-xs font-bold font-mono tracking-wider shadow-glow-emerald hover:brightness-110 active:scale-95 transition-all">
+          PROPOSE SUBSTITUTE
+        </button>
+      `;
+    }
+
+    function selectNode(node) {
+      if (node === 'kaveri' && !isCorridorHealed) {
+        document.getElementById('inspect-title').textContent = "Kaveri Cold Chain · Stranded";
+      } else if (node === 'joshi') {
+        document.getElementById('inspect-title').textContent = "Joshi Fleet Services (You)";
+        document.getElementById('inspect-desc').textContent = "Hadapsar Depot Headquarters. 2 Chilled vans ready for transit.";
+      } else if (node === 'gandhi') {
+        document.getElementById('inspect-title').textContent = "Gandhi Pharmacy · Destination";
+        document.getElementById('inspect-desc').textContent = "Awaiting 400kg insulin. Cold storage failing; 4h 58m window remaining.";
+      }
+    }
+
+    function advanceTaskStep(action) {
+      const btn = document.getElementById('btn-task-action');
+      const stepTag = document.getElementById('task-step-tag');
+
+      if (action === 'pickup') {
+        stepTag.textContent = "IN TRANSIT TO SWARGATE";
+        stepTag.className = "text-[10px] font-mono text-amberWarn font-bold";
+        btn.innerHTML = `
+          <span class="material-symbols-outlined text-[20px]">where_to_vote</span>
+          <span>ARRIVED AT SWARGATE SAFE POINT</span>
+        `;
+        btn.setAttribute('onclick', "advanceTaskStep('arrive')");
+      } else if (action === 'arrive') {
+        switchScreen('handoff');
+      }
+    }
+
+    function verifyHandoffPin() {
+      const pin = document.getElementById('counterparty-pin').value;
+      if (pin.length === 4) {
+        document.getElementById('handoff-success-toast').classList.remove('hidden');
+      } else {
+        alert("Enter a valid 4-digit verification token (e.g. 4821)");
+      }
+    }
+
+    function toggleFallbackPhoto() {
+      const box = document.getElementById('fallback-camera-box');
+      box.classList.toggle('hidden');
+    }
+
+    function confirmFallbackSuccess() {
+      document.getElementById('fallback-camera-box').classList.add('hidden');
+      document.getElementById('handoff-success-toast').classList.remove('hidden');
+    }
+
+    function toggleDirectionModal() {
+      const modal = document.getElementById('direction-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    function sendQuickSms(cmd) {
+      const stream = document.getElementById('sms-stream');
+      const userBubble = document.createElement('div');
+      userBubble.className = "bg-emeraldGlow text-obsidian p-2 rounded-2xl rounded-tr-sm ml-auto max-w-[50%] font-bold text-right shadow-glow-emerald";
+      userBubble.textContent = cmd;
+      stream.appendChild(userBubble);
+
+      setTimeout(() => {
+        const relayBubble = document.createElement('div');
+        relayBubble.className = "bg-white/10 text-textPrimary p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] border border-white/5";
+        
+        if (cmd === 'ACCEPT') {
+          relayBubble.innerHTML = `<span class="text-[9px] text-textSubtle block font-bold text-emeraldGlow">RELAY CORE:</span> Task T214 assigned. Give code <strong>4821</strong> at Swargate. IOU ₹4,200 reserved.`;
+        } else if (cmd.includes('DONE')) {
+          relayBubble.innerHTML = `<span class="text-[9px] text-textSubtle block font-bold text-emeraldGlow">RELAY CORE:</span> Handoff confirmed. Consignment transferred to Rider Shinde. ₹4,200 claim recorded.`;
+        } else {
+          relayBubble.innerHTML = `<span class="text-[9px] text-textSubtle block font-bold text-emeraldGlow">RELAY CORE:</span> Status: Hadapsar corridor active. 2/4 vans operating. All safe.`;
+        }
+        stream.appendChild(relayBubble);
+        stream.scrollTop = stream.scrollHeight;
+      }, 500);
+
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function executeCustomSms() {
+      const input = document.getElementById('sms-custom-input');
+      const val = input.value.trim().toUpperCase();
+      if (!val) return;
+      sendQuickSms(val);
+      input.value = "";
+    }
+  </script>
+</body></html>
